@@ -1,0 +1,16 @@
+{
+  "name": "Anderson",
+  "platform": "HTML",
+  "version": "1.2",
+  "wabVersion": "1.2",
+  "author": "Hector M. Asencio GMT developer",
+  "description": "This is a very simple widget",
+  "copyright": "",
+  "license": "http://www.apache.org/licenses/LICENSE-2.0",
+  "properties": {
+    "hasConfig": true,
+    "hasStyle": true,
+    "hasLocale": true,
+    "hasUIFile": true
+  }
+}

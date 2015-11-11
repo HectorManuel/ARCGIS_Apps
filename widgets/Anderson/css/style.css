@@ -1,0 +1,214 @@
+      
+select{
+    background-color: #D5D5D5;
+    border: 1px solid gray;
+    width:90%;
+    height:35px;
+    border-radius: 3px;
+
+}
+.SubDiv{
+    padding-top: 15px;
+    width: 90%;
+
+}
+
+.SubDivLista{
+    padding-top: 5px;
+
+}
+
+.SubDiv2{
+    padding-top: 15px;
+    display: none;
+}
+
+.Subtipos{
+    padding-top: 15px;
+    display: none;
+}
+
+p {
+    font-size: 1em;
+    font-weight:600;
+    margin-top: 5px;
+    display:block;
+
+}
+
+/*css classes modification for dijits aned stuff */
+
+
+.jimu-widget-frame.jimu-container {
+	padding:4px 4px 4px 4px;
+}
+
+.dijitTree{
+	overflow-x:auto;
+	overflow-y: hidden;
+}
+
+.claro .dijitTabPaneWrapper, .claro .dijitTabContainerTop-tabs, .claro .dijitTabContainerBottom-tabs, .claro .dijitTabContainerLeft-tabs, .claro .dijitTabContainerRight-tabs{
+	border-color:transparent;
+}
+
+.claro .dijitTabContainerTop-dijitContentPane, .claro .dijitTabContainerLeft-dijitContentPane, .claro .dijitTabContainerBottom-dijitContentPane, .claro .dijitTabContainerRight-dijitContentPane, .claro .dijitAccordionContainer-dijitContentPane{
+	padding: 0px,
+}
+
+.claro .dijitTextBox{
+	height:26px;
+	width: 100%;
+	margin-left:5px;
+	border-radius:3px;
+}
+
+.dijitTextBox input.dijitArrowButtonInner{
+	height:100% !important;
+}
+
+.claro .dijitArrowButtonContainer{
+	height:100%;
+}
+
+.claro .dijitTextBox .dijitInputField{
+	padding-left:3px;
+	padding-right:5px;
+	padding-top:0px;
+	height:100%;
+}
+
+/*end of modifications for stuff dijits*/
+
+
+#items{
+    height:200px;
+    width:300px;
+    background-color:white !Important;
+    border:2px solid #C5C5C5;
+    border-radius: 3px;
+}
+
+#items option{
+    border:none;
+    margin-top:5px;
+    background-color: #D5D5D5;
+    height:40px;
+    
+}
+
+
+#items option:hover{
+    background-color:gray;
+}
+
+.mainTitle{
+	font-size:1.5em;
+	font-weight:600;
+	color:black;
+	text-align:center;
+	word-wrap: break-word;
+	width:100%;
+	margin-bottom:10px:
+}
+
+.btnStyle1 {
+    width:auto;
+    height:20px;
+    font-size:1em;
+    background-color: orange;
+    color:black;
+    font-weight:600;
+    border:1px solid orange;
+    border-radius: 5px;
+    margin-top:15px;
+    margin-left: 10px;
+    
+}
+.btnDeleteStyle {
+    width:auto;
+    height:18px;
+    font-size:1em;
+    background-color: red;
+    color:white;
+    font-weight:600;
+    border:1px solid red;
+    border-radius: 3px;
+    margin-left: 5px;
+    
+}
+.btnStyle2 {
+    width:auto;
+    height:18px;
+    font-size:1em;
+    background-color: #838383;
+    color:white;
+    font-weight:600;
+    border:1px solid #838383;
+    border-radius: 3px;
+    
+    
+ 
+    
+}
+
+.MainDiv {
+
+    width: 300px;
+    text-align: center;
+
+    
+}
+
+#dataBrowser{
+	height:100%;
+	width:100%;
+	top:20px;
+	left:20px;
+}
+
+
+	
+table, tbody,td {
+	background:#eee;
+	display:block;
+	
+}
+.ter {
+	font-size:14px;
+	font-weight:600;
+}
+.ter2 {
+	font-size:12px;
+	
+}
+tr {
+	padding-top:4px;
+	display:block;
+}
+
+
+.spanDivStyle{
+	width: 100%;
+	white-space:normal;
+	border: none;
+	background-color: rgba(224, 224, 224);
+	color: rgb(25,25,25);
+	font-size: 1em;
+	margin-bottom: 3px;
+	margin-top:3px;
+	font-weight: 500;
+	font-family: inherit;
+	font-style: inherit;
+	text-decoration: inherit;
+	text-align: left;
+}
+
+#selectedTypes{
+	max-height: 200px; 
+	width: 100%;
+	overflow-y: auto; 
+	margin-top: 5px;
+	margin-left:5px;
+}
+
