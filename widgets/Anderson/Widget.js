@@ -60,6 +60,8 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
   box:null,
   justCruising: true,
   dataList:null,
+  hideReferencias:false,
+  hideComercios:false,
   
   treeCheckItems: [],
   treeCheckedItemsComercios:[],
@@ -339,7 +341,9 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
    ItemClicked: function(item, node, event){
      var items = item;
      var nodes = node;
-     this.map.centerAndZoom(item.location, 18);
+     if(item.type == "comercios"){
+       this.map.centerAndZoom(item.location, 16);
+     }
    },
    
    ShowAllSelectedCommerce: function(node){
@@ -349,12 +353,12 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
            if(this.treeCheckedItemsComercios.indexOf(child.item.id)>-1){
              this.treeCheckItemsComercios.splice(this.treeCheckItemsComercios.indexOf(child.item.id),1);
            }
-           this.treeCheckItemsComercios.push(child.item.id);
+           this.treeCheckedItemsComercios.push(child.item.id);
          }
          else{
            var index = this.treeCheckedItemsComercios.indexOf(child.item.id);
            if(index>-1){
-             this.treeCheckItemsComercios.splice(index,1);
+             this.treeCheckedItemsComercios.splice(index,1);
            }
          }
        }
@@ -371,16 +375,16 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
    
    SetFeaturesComercios: function(child){
      if(child.item.type=="comercios"){
-         if(node.get("checked")){
+         if(child.get("checked")){
            if(this.treeCheckedItemsComercios.indexOf(child.item.id)>-1){
-             this.treeCheckItemsComercios.splice(this.treeCheckItemsComercios.indexOf(child.item.id),1);
+             this.treeCheckedItemsComercios.splice(this.treeCheckItemsComercios.indexOf(child.item.id),1);
            }
-           this.treeCheckItemsComercios.push(child.item.id)
+           this.treeCheckedItemsComercios.push(child.item.id)
          }
          else{
            var index = this.treeCheckedItemsComercios.indexOf(child.item.id);
            if(index>-1){
-             this.treeCheckItemsComercios.splice(index,1);
+             this.treeCheckedItemsComercios.splice(index,1);
            }
          }
        }
@@ -544,7 +548,7 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
    
    abrete : function(){
    	//this.myDialog.set("content", );
-   	  this.tree.destroy();
+   	  //this.tree.destroy();
       // this.AlFin.appendChild(grid.domNode);
      	// grid.startup();
    	  //this.dialogo.show();
@@ -903,7 +907,7 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
                       }
 	          	  		  
 	          	  			var idParent = listToQuery[i].tipo;
-	          	  			var nameParent = firstCount +"  "+ informacion.layers[1].types[parseInt(listToQuery[i].tipo)].name;
+	          	  			var nameParent = "Total: " + firstCount +" - "+ informacion.layers[1].types[parseInt(listToQuery[i].tipo)].name;
 	          	  			var typeParent = 'tipoLocal';
 	          	  			var parentParent = "R";
 	          	  			
@@ -955,8 +959,8 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
 			          	  			TreeView.AddToMemory(idChild, nameChild, typeChild, parentChild, geom);
 		            	  		}
 		            	  	}
-		            	  	var row = domConstruct.toDom("<tr><td class='ter'>"+informacion.layers[1].types[parseInt(listToQuery[i].tipo)].name+": "+"</td><td class='ter2'>"+counter+"</td></tr>")
-		          	  		domConstruct.place(row,this.tableBodyGross);
+		            	  	//var row = domConstruct.toDom("<tr><td class='ter'>"+informacion.layers[1].types[parseInt(listToQuery[i].tipo)].name+": "+"</td><td class='ter2'>"+counter+"</td></tr>")
+		          	  		//domConstruct.place(row,this.tableBodyGross);
 		          	  		added.push(listToQuery[i].tipo);
 	          	  		}
 	            	  	
@@ -1111,8 +1115,10 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
 
     ActivateEditButton:function(){
     	if(this.isEditing){
-    		domStyle.set(this.editSelect,{display:"block"});
-    		domStyle.set(this.borrar,{display:"block"});
+    	  if(listToQuery.length>0){
+    	    domStyle.set(this.editSelect,{display:"block"});
+          domStyle.set(this.borrar,{display:"block"});
+    	  }
 			}
     },
     
@@ -1136,6 +1142,7 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
 	        this.items.appendChild(opt);
 	    }
 	    domStyle.set(this.editSelect,{display:"none"}); 
+	    this.ClearAllFields();
     },
     
     ClearAllFields: function(){
@@ -1143,7 +1150,6 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
     	for (var i=BarrioLength-1; i>=1;i--)
 	    {
 	        this.barriadas.remove(i);
-	        
 	    }
 	    this.barriadas.disabled = "disabled";
     	

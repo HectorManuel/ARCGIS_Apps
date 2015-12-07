@@ -62,6 +62,8 @@ function (declare, array, lang, kernel, domConstruct, i18n, _WidgetsInTemplateMi
           showRoot:false,
           branchIcons:false,
           leafIcons:false,
+          openOnChecked:true,
+          openOnDblClick:true,
           id: "PuntosReferencias"
         });
         return this.tree;
@@ -77,6 +79,9 @@ function (declare, array, lang, kernel, domConstruct, i18n, _WidgetsInTemplateMi
         this.myStore.load({data:[{ id: 'R', name:'Results', type:'result', location:null, checked:false}]});
       },
       
+//******************************************************************************************************************
+//******************************************************************************************************************
+//**************** comercios *****************      
       
       CreateStoreComercios: function(){
         this.comercioStore = new ObjectStore({
@@ -107,6 +112,8 @@ function (declare, array, lang, kernel, domConstruct, i18n, _WidgetsInTemplateMi
           showRoot:false,
           branchIcons:false,
           leafIcons:false,
+          openOnChecked:true,
+          openOnDblClick:true,
           id: "ListaDeComercios"
         });
         return this.tree;
