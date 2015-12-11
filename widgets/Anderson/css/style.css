@@ -40,7 +40,7 @@ p {
 
 
 .jimu-widget-frame.jimu-container {
-	padding:4px 4px 4px 4px;
+	padding:4px 4px 0px 4px;
 }
 
 .dijitTree{
@@ -79,7 +79,7 @@ p {
 }
 
 .claro .dijitTabPaneWrapper{
-	height:700px !important;
+	height:655px !important;
 }
 
 .claro .dijitTabContainerTop-tabs .dijitTab{
@@ -164,11 +164,16 @@ p {
     font-weight:600;
     border:1px solid #838383;
     border-radius: 3px;
-    margin-top:5px;
-    
-    
- 
-    
+    margin-top:5px;  
+}
+
+.visibilityBtn{
+	width:26px;
+	height:24px;
+	background: url('../images/visibilityIcon.png');
+	background-color: transparent;
+	background-repeat: no-repeat;
+	border:none;
 }
 
 .MainDiv {

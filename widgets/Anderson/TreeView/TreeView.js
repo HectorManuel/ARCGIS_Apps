@@ -9,11 +9,12 @@ define(['dojo/_base/declare',
     'dojo/store/Memory',
     'widgets/Anderson/cbtree/model/TreeStoreModel',
     'widgets/Anderson/cbtree/store/ObjectStore',
+    'widgets/Anderson/cbtree/model/StoreModel-EXT',
     'widgets/Anderson/cbtree/Tree',
     'dojo/store/Observable'
 ],
 function (declare, array, lang, kernel, domConstruct, i18n, _WidgetsInTemplateMixin, 
-          BaseWidget, Memory, ObjectStoreModel, ObjectStore, Tree, Observable) {
+          BaseWidget, Memory, ObjectStoreModel, ObjectStore, ModelExt, Tree, Observable) {
     return { //declare([BaseWidget, _WidgetsInTemplateMixin], 
       myStore:null,
       myObservable:null,
@@ -35,7 +36,7 @@ function (declare, array, lang, kernel, domConstruct, i18n, _WidgetsInTemplateMi
                         // clearOnClose:true});
         // this.myObservable = Observable(this.myStore);
         this.myStore = new ObjectStore({
-                data:[{ id: 'R', name:'Results', type:'result', location:null, checked:false}],clearOnClose:true});
+                data:[{ id: 'R', name:'Results', type:'result', location:null}],clearOnClose:true});
         //this.myObservable = Observable(this.myStore);
         this.myModel = new ObjectStoreModel({
           store: this.myStore,
@@ -46,7 +47,7 @@ function (declare, array, lang, kernel, domConstruct, i18n, _WidgetsInTemplateMi
       },
 
       AddToMemory: function(id, name, type, parent, location){
-        var ar = { id: id, name:name, type:type, parent: parent, location:location, checked:false};
+        var ar = { id: id, name:name, type:type, parent: parent, location:location};
         console.log(ar);
         var verify = this.myStore.get(ar.id);
         if(!verify){
@@ -76,8 +77,10 @@ function (declare, array, lang, kernel, domConstruct, i18n, _WidgetsInTemplateMi
       
       ClearStore: function(){
         this.myStore.close();
-        this.myStore.load({data:[{ id: 'R', name:'Results', type:'result', location:null, checked:false}]});
+        this.myStore.load({data:[{ id: 'R', name:'Results', type:'result', location:null}]});
       },
+      
+      UncheckReference: function(){},
       
 //******************************************************************************************************************
 //******************************************************************************************************************
@@ -119,16 +122,20 @@ function (declare, array, lang, kernel, domConstruct, i18n, _WidgetsInTemplateMi
         return this.tree;
       },
       
-      GetFirstPoint: function(id){
+      GetFirstPointComercio: function(id){
         var test = this.comercioStore.get(id);
         return test.location;       
       },
       
       ClearStoreCommerce: function(){
         this.comercioStore.close();
-        this.comercioStore.load({data:[{ id: 'R', name:'Results', type:'result', location:null, checked:false}]});
+        this.comercioStore.load({data:[{ id: 'R', name:'Results', type:'result', location:null}]});
       },
       
+      UnCheckCommerce: function(){
+       
+        this.modelStore.uncheck({checked:true});
+      }
         
     };
 });

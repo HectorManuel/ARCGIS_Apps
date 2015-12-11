@@ -62,12 +62,15 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
   dataList:null,
   hideReferencias:false,
   hideComercios:false,
+  checkNotClick:false,
   
   treeCheckItems: [],
   treeCheckedItemsComercios:[],
   selectedComerceArray:[],
+  VC : true,
+  VD : true,
   
-  selectedComerceStore: null,
+  //selectedComerceStore: null,
 
   NAICS:[{id:"categorias", name:"Seleccione Categoría", label:"Seleccione categoría"}],
     _getMapId: function(){
@@ -304,6 +307,7 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
          }
        }
        else{
+         //si no es comercios, va a buscar los children de el objecto a ver si tiene children
          node.getChildren().forEach(lang.hitch(this, function(node){
            if(node.item.type =="comercio"){
              if(node.get("checked")){
@@ -326,6 +330,7 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
        }
    }));
        this.setFeatures(node);
+       this.getFilteredList();
      //this.treeCheckitem = TreeView.CheckBoxClicked(item, node, event);
    },
    
@@ -336,13 +341,21 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
      domStyle.set(this.cucar, {display:'block'});
      this.ShowAllSelectedCommerce(node);
      this.ShowCommerceOnMap();
+     this.checkNotClick = true;
+     this.justCruising = false;
    },
    
    ItemClicked: function(item, node, event){
-     var items = item;
-     var nodes = node;
-     if(item.type == "comercios"){
-       this.map.centerAndZoom(item.location, 16);
+     if(!this.checkNotClick){
+       var items = item;
+       var nodes = node;
+       if(item.type == "comercios"){
+         this.map.centerAndZoom(item.location, 15);
+         //this.map.infoWindow.show(item.location, esri.dijit.InfoWindow.ANCHOR_UPPERRIGHT);
+       }
+     }
+     else{
+       this.checkNotClick = false; 
      }
    },
    
@@ -351,7 +364,7 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
        if(child.item.type=="comercios"){
          if(node.get("checked")){
            if(this.treeCheckedItemsComercios.indexOf(child.item.id)>-1){
-             this.treeCheckItemsComercios.splice(this.treeCheckItemsComercios.indexOf(child.item.id),1);
+             this.treeCheckedItemsComercios.splice(this.treeCheckItemsComercios.indexOf(child.item.id),1);
            }
            this.treeCheckedItemsComercios.push(child.item.id);
          }
@@ -366,10 +379,17 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
      this.SetFeaturesComercios(node);
    },
    
+   ClearAllSelectedCheckBox: function(){
+     this.justCruising=true;
+     var CommerceStore = TreeView.comercioStore;
+     if(this.treeCheckedItemsComercios.length > 0){
+       this.treeCheckedItemsComercios.splice(0, this.treeCheckedItemsComercios.length);
+     }
+     TreeView.UnCheckCommerce();
+     this.ExtentChange();
+   },
+   
    ClearAllComercios: function(){
-     // domConstruct.empty(this.listaComercios);
-     // domConstruct.empty(this.selectedTypes);
-     this.selectedComerceStore.setData([]);
      TreeView.ClearStoreCommerce();
    },
    
@@ -377,7 +397,7 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
      if(child.item.type=="comercios"){
          if(child.get("checked")){
            if(this.treeCheckedItemsComercios.indexOf(child.item.id)>-1){
-             this.treeCheckedItemsComercios.splice(this.treeCheckItemsComercios.indexOf(child.item.id),1);
+             this.treeCheckedItemsComercios.splice(this.treeCheckedItemsComercios.indexOf(child.item.id),1);
            }
            this.treeCheckedItemsComercios.push(child.item.id)
          }
@@ -415,22 +435,30 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
      var q = new Query();
      q.objectIds = this.treeCheckedItemsComercios;
      
-     LayerComercios.selectFeatures(q,FeatureLayer.SELECTION_NEW);
      
+     if(this.treeCheckedItemsComercios.length > 0)
+     {
+       LayerComercios.selectFeatures(q,FeatureLayer.SELECTION_NEW);
+       var location  = TreeView.GetFirstPointComercio(this.treeCheckedItemsComercios[this.treeCheckedItemsComercios.length-1])
+       this.map.centerAndZoom(location,15);
+     }
+     else{
+       this.justCruising = true;
+     }
    },
    
     getFilteredList: function(){
       
-      this.map.graphics.clear();
+      //this.map.graphics.clear();
 
       var queryFiltered = new Query();
       queryFiltered.objectIds= this.treeCheckItems;
       
-      if(this.treeCheckItems.length > 0)
+      if(this.treeCheckItems.length > 0 )
       {
         referenceLayer.selectFeatures(queryFiltered,FeatureLayer.SELECTION_NEW);
-        var location = TreeView.GetFirstPoint(this.treeCheckItems[0]);
-        this.map.centerAndZoom(location,14); 
+        var location = TreeView.GetFirstPoint(this.treeCheckItems[this.treeCheckItems.length-1]);
+        this.map.centerAndZoom(location,15); 
       }
       else{
         this.justCruising= true;
@@ -443,17 +471,24 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
    ExtentChange: function(extent){
    	var escala = this.map.getScale();
    	var level = this.map.getLevel();
-   	var ex = extent;
+   	var test = this.map.extent;
+   	var ex;
+   	if(!extent){
+   	  ex = this.map.extent;
+   	}
+   	else{
+   	  ex = extent;
+   	}
    	var query = new Query();
    	var queryReference = new Query();
    	query.geometry = extent;
-   	queryReference.geometry = extent;
+   	if(!extent){
+   	  queryReference.geometry = this.map.extent;
+   	}
+   	else{
+   	  queryReference.geometry = extent;
+   	}
    	if(this.justCruising){
-   	  
-   	  
-     	// if(this.ZipCodeList2.value != "default"){
-     		// query.where = "NAICS_DESCRIPTION =" + "'" + this.ZipCodeList2.value + "'";
-     	// }
      	var valueTest = this.box.get('displayedValue');
       if(valueTest != "Seleccione Categoría"){
         //query.where = "NAICS_DESCRIPTION =" + "'";
@@ -491,6 +526,19 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
    	}
    	else{
    	  console.log("extent ignored");
+   	  //update layer with result from clicked items on the treeview
+   	  //if treeview items have been checked
+   	  if(this.treeCheckedItemsComercios >0){
+   	    var q = new Query();
+        q.objectIds = this.treeCheckedItemsComercios;
+        LayerComercios.selectFeatures(q,FeatureLayer.SELECTION_NEW);
+   	  }
+      if(this.treeCheckItems.length > 0 )
+      {
+        var queryFiltered = new Query();
+        queryFiltered.objectIds= this.treeCheckItems;
+        referenceLayer.selectFeatures(queryFiltered,FeatureLayer.SELECTION_NEW);
+      }
    	}
 
    },
@@ -506,11 +554,6 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
     				var obj = features[key];
    					if(obj.geometry){
    						inBuffer.push(obj.attributes[referenceLayer.objectIdField]);
-/*   						var opt =  document.createElement('option');
-
-   						opt.innerHTML = obj.attributes.BUSSINES_NAME;
-   						opt.value = obj.attributes.OBJECTID;
-   						this.listaComercios.appendChild(opt);*/
 
    					}
     			}
@@ -534,7 +577,12 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
     			{
     				var obj = features[key];
    					if(obj.geometry){
-   					  TreeView.AddToMemoryComercio(obj.attributes.OBJECTID, obj.attributes.BUSSINES_NAME.trim(),'comercios', obj.attributes.NAICS_DESCRIPTION, obj.geometry); 
+   					  try{
+   					    TreeView.AddToMemoryComercio(obj.attributes.OBJECTID, obj.attributes.BUSSINES_NAME.trim(),'comercios', obj.attributes.NAICS_DESCRIPTION, obj.geometry); 
+ 					    }
+ 					    catch(error){
+ 					      console.log(error);
+ 					    }
  					   }
  					  inBuffer.push(obj.attributes[LayerComercios.objectIdField]);
  					}
@@ -544,7 +592,44 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
 
    	LayerComercios.selectFeatures(query3,FeatureLayer.SELECTION_NEW);
    },
-
+   
+   ChangeLayerVisibilityR: function(){
+     if(this.VD){//reference
+       // document.getElementById(this.visibilityR).src="widgets/Anderson/images/visibilityOffIcon.png";
+       domStyle.set(this.visibilityR,{backgroundImage:"url('widgets/Anderson/images/visibilityOffIcon.png')"});
+       referenceLayer.hide();
+       this.VD=false;
+       this.justCruising = true;
+     }
+     else //poner visible
+     {
+       domStyle.set(this.visibilityR,{backgroundImage:"url('widgets/Anderson/images/visibilityIcon.png')"});
+       referenceLayer.show();
+       this.VD=true;
+       //refresh layer
+       //this.ExtentChange();
+       
+       
+     }
+   },
+   
+   ChangeLayerVisibilityC: function(){
+     if(this.VC){//reference
+       // document.getElementById(this.visibilityR).src="widgets/Anderson/images/visibilityOffIcon.png";
+       domStyle.set(this.visibilityC,{backgroundImage:"url('widgets/Anderson/images/visibilityOffIcon.png')"});
+       LayerComercios.hide();
+       this.VC = false;
+       this.justCruising = true;
+     }
+     else if(1)//comercios
+     {
+       domStyle.set(this.visibilityC,{backgroundImage:"url('widgets/Anderson/images/visibilityIcon.png')"});
+       LayerComercios.show();
+       this.VC = true;
+       //refresh view
+       this.ExtentChange();
+     }
+   },
    
    abrete : function(){
    	//this.myDialog.set("content", );
@@ -867,7 +952,7 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
 	            	  var added =[];
 	            	  var exist=false;
 	            	  var row = domConstruct.toDom("<tr><td class='ter'>"+"Total values obtained"+": "+"</td><td class='ter2'>"+featureSet.features.length+"</td></tr>")
-	            	  this.map.centerAndZoom(featureSet.features[0].geometry, 14);
+	            	  this.map.centerAndZoom(featureSet.features[0].geometry, 15);
 	        	  		domConstruct.place(row,this.tableBodyGross);
 	        	  		//TreeView.AddRootToMemory("R", "Total: "+featureSet.features.length ,"result", null);
 	        	  		/*
@@ -937,11 +1022,7 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
 	          	  			        tempListForMunicipio.push({municipio: obj.municipio, tipo: obj.tipo})
                             }
                             
-	          	  			      // var index = tempListForMunicipio.indexOf(obj.municipio);
-	          	  			      // if(index == -1){
-	          	  			        // tempListForMunicipio.push(obj.municipio);
-	          	  			        // TreeView.AddToMemory(obj.municipio, obj.municipio, "municipios", obj.tipo, null);
-	          	  			      // }
+
 	          	  			    }
 	          	  			  }
 	          	  			}
@@ -983,12 +1064,7 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
 	            	  
 	            	  domStyle.set(this.requestInfo,{display:'none'});
 	            	  domStyle.set(this.Results,{display:'block'});
-            	    
-            	    //start tree after all data has been set
-            	    //TreeView.AddChildren();
-            	    // var tree = TreeView.SetData();
-            	    // tree.placeAt(this.treeViewBody);
-            	    // tree.startup();
+
             	    this.tree.expandAll();
 
             	    //create grid with data
@@ -1000,22 +1076,6 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
 							    for(var i=0, l=fullList.length; i<rows; i++){
 							      data.items.push(dojo.mixin({ id: i+1 }, fullList[i%l]));
 							    }
-/*
-							    var store = new ItemFileWriteStore({data: data});//var store = new MemoryStore({data: data});
-							    var layout = [[
-							      {'name': 'id', 'field': 'id'},
-							      {'name': 'barrio', 'field': 'BARRIO'},
-							      {'name': 'Municipio', 'field': 'MUNICIPIO'},
-							      {'name': 'Tipo', 'field': 'TIPO'}
-							    ]];
-							   
-					     		grid = new EnhanceGrid({
-							        id: 'grido',
-							        store: store,
-							        structure: layout,
-							        rowSelector: '20px'},
-							        document.createElement('div'));
-							    //****************************************/
 
         			}),orderBy);
     },
@@ -1061,7 +1121,7 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
 			query.geometry = radio.getExtent();
 			
 			//referenceLayer
-			this.map.centerAndZoom(evt.mapPoint, 14);
+			this.map.centerAndZoom(evt.mapPoint, 15);
 			//referenceLayer.queryFeatures(query,lang.hitch(this,this.Buffer));
 			
 			
@@ -1357,10 +1417,7 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
 						        }
 
 						    }
-						    // if(isEdit)
-					      // {
-					      		// this.subTypesEdit();
-						    // }
+
     },
     
     findName : function(thing){
@@ -1372,8 +1429,6 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
     			return informacion.layers[1].types[this.tipo.value].domains.SUBTIPO.codedValues[i].name;
     		}
     	}
-    	
-    	//informmacion.layers[1].types[this.tipo.value].domains.SUBTIPO.
     },
     
     
@@ -1389,10 +1444,6 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
     },
 
     tipoIndicator : function(){
-    	//referenceLayer.refresh();
-    	//referenceLayer.redraw();
-    	//this.map.graphics.redraw();
-    	//this.map.graphics.refresh();
     	tipoChanged = true;
     	lang.hitch(this,this.municipio.disabled = "");
     	domStyle.set(this.tipo,{border: "1px solid gray"});
@@ -1479,7 +1530,6 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
     			var mun = this.municipio.value; 
     			var tip = this.tipo.value; 
     			var bar = this.barriadas.value;
-    			//options[this.barriadas.selectedIndex].
     			SubWhere="Municipio ='"+mun+"' AND TIPO='"+tip+"' AND BARRIO='"+bar+"'";
   			}
     		else if (!ZipChanged && !AreaChanged && !barrioChanged)
@@ -1532,8 +1582,7 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
 	    	var fieldRange2 = ["ZIP"];
 	    	var fieldRange3 = ["NOMBRE_AREA"];
 	     
-	      //console.log(features);
-	    	//+
+
 	    	//remove old info from dropdowns
 	 
 		    
@@ -1570,162 +1619,3 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
 
   return clazz;
 });
-
-
-/* Commenct section for the code used fo the list that show the results
- * in here you will find code that was ised and can be used again if nedded 
- */
-//                
-              // if(!this.selectedComerceStore){
-                // this.selectedComerceStore = ComboBox.ComboBoxMemory([{id:obj.attributes.OBJECTID, name:obj.attributes.BUSSINES_NAME, location:obj.geometry, description: obj.attributes.NAICS_DESCRIPTION}]); 
-                // domStyle.set(this.cucar,{display:'block'});
-              // }else{
-                // var verify = this.selectedComerceStore.get(obj.attributes.OBJECTID);
-                // if(!verify){
-                  // var ar = {id:obj.attributes.OBJECTID, name:obj.attributes.BUSSINES_NAME, location:obj.geometry, description: obj.attributes.NAICS_DESCRIPTION}};
-                  // this.selectedComerceStore.put(ar);
-                // }
-              // }
-//                
-              // if(!verify){
-//                  
-                // CustomList.CSSStyle = 'width: 100%;white-space:normal;border: 1px solid gray;background-color: #E0E0E0;color: #191919;font-size: 1em;margin-bottom: 3px;margin-top:3px;font-weight: 500;font-family: inherit;font-style: inherit;text-decoration: inherit;text-align: left;border-radius:3px;padding:3px';
-                // var opt = CustomList.CustomListItem(obj.attributes.BUSSINES_NAME, obj.attributes.OBJECTID);
-                // //this.selectedComerceStore
-                // this.listaComercios.appendChild(opt);
-                // opt.onclick = lang.hitch(this, function(item){
-                // var loc = this.selectedComerceStore.get(item.currentTarget.id);
-                  // this.map.centerAndZoom(loc.location, 18);
-                // });  
-
-
-
-       // CustomList.CSSStyle = 'width: 100%;white-space:normal;border: none;background-color: #E0E0E0;color: #191919;font-size: 1em;margin-bottom: 3px;margin-top:3px;font-weight: 500;font-family: inherit;font-style: inherit;text-decoration: inherit;text-align: left;border-radius:3px;padding:3px';
-       // var opt= CustomList.CustomListItem(value, value);
-       // opt.onclick = lang.hitch(this,function(item){
-         // var id = item.currentTarget.id;
-         // //this.DeleteComerceOfTypes(id);
-         // this.selecteComerceArray.remove(id);
-         // this.extentChange(this.map.extent);
-       // });
-       // this.selectedTypes.appendChild(opt);
-
-/* *******************************************************************\
- * this section of codes are code that were used for trial and error.
- * Code that is not in use but may be used as reference in the future.
- *  
-\* *******************************************************************/
-	    //use to disable/enable options tag
-	    //this.urbRutaList.options[0].disabled = "";
-	    //barrio.disabled=false;
-	    //zipCode.disabled=false;
-	    //urb_ruta.disabled=false;
-	    
-//    this.municipio.appendChild("Test");
-
-//properties not use in here, added in the manifest.json
-  //clazz.hasStyle = false;
-  //clazz.hasUIFile = false;
-  //clazz.hasLocale = false;
-  //clazz.hasConfig = false;
-
-//old code use to fill the dropdowns with dummy data	
-	    /*
-	    //var lista = municipios2[newMun].barrio.length;
-	//    if (municipios2[newMun]!=undefined && (municipios2[newMun].barrio.length !=0|| municipios2[newMun].Zip.length !=0||municipios2[newMun].Urb.length !=0)
-	//    {
-	    for (var i = 0; i <features.length; i++)
-	    {
-	        var opt = document.createElement('option');
-	        opt.innerHTML = features[i].attributes["BARRIO"];
-	        opt.value = features[i].attributes["BARRIO"];
-	
-	        this.barriadas.appendChild(opt);
-	        
-	
-	    }
-	    
-	    for (var i = 0; i <features.length; i++)
-	    {
-	        var opt = document.createElement('option');
-	        opt.innerHTML = features[i].attributes["ZIP"];
-	        opt.value = features[i].attributes["ZIP"];
-	
-	        this.ZipCodeList.appendChild(opt);
-	        
-	
-	    }
-	    // for (var i = 0; i <municipios2[newMun].Zip.length; i++)
-	    // {
-	        // var opt = document.createElement('option');
-	        // opt.innerHTML = municipios2[newMun].Zip[i];
-	        // opt.value = municipios2[newMun].Zip[i];
-// 	
-	        // this.ZipCodeList.appendChild(opt);
-// 	
-	    // }
-	    for (var i = 0; i <features.length; i++)
-	    {
-	        var opt = document.createElement('option');
-	        opt.innerHTML = features[i].attributes["NOMBRE_AREA"];
-	        opt.value = features[i].attributes["NOMBRE_AREA"];
-	
-	        this.urbRutaList.appendChild(opt);
-	        
-	
-	    }
-	    // for (var i = 0; i <municipios2[newMun].Urb.length; i++)
-	    // {
-	        // var opt = document.createElement('option');
-	        // opt.innerHTML = municipios2[newMun].Urb[i];
-	        // opt.value = municipios2[newMun].Urb[i];
-// 	
-	        // this.urbRutaList.appendChild(opt);
-// 	
-	    // }
-	    
-	        	
-    //	this.myDialog = new Dialog({
-    //		title: "myDialog",
-    //		content: "<div data-dojo-attach-point='AlFin' style='width: 90%;height: 90%'></div>",
-    //		//href: 'widgets/samplewidgets/Simple2/DataBrowser',
-    //		parseOnLoad:true,
-    //		preLoad : true,
-    //		doLayout: true,
-    //		refreshOnShow:true,
-    //		style:"background-color:white; width:50% !important; height:50% !important;"
-    //	});
-
-
-EXTRAIDO DE CHANGE SUBTIPO
-/*
-						        if(featuresSet.features[i].attributes["NOMBRE"].trim() == "")
-						        {
-						        	
-						        }
-						        else
-						        {
-						        	opt.innerHTML = featuresSet.features[i].attributes["NOMBRE"];
-						        	opt.value = featuresSet.features[i].attributes["NOMBRE"];
-						        	this.Stipo.appendChild(opt);
-						        }*/
-
-			/*
-										if(featuresSet.features[i].attributes["SUBTIPO"] == "N/A" || featuresSet.features[i].attributes["SUBTIPO"] == "" || featuresSet.features[i].attributes["SUBTIPO"] == null)
-													{
-														opt.innerHTML = featuresSet.features[i].attributes["SUBTIPO"];
-														opt.value = featuresSet.features[i].attributes["SUBTIPO"];	
-														this.Stipo.appendChild(opt);
-																												}
-													else{
-														//var weirdstuff = this.findName(featuresSet.features[i].attributes["SUBTIPO"]);
-														var weirdstuff = this.determineSubtype(featuresSet.features[i].attributes["SUBTIPO"]);
-														opt.innerHTML = featuresSet.features[i].attributes["SUBTIPO"] + weirdstuff;
-														opt.value = featuresSet.features[i].attributes["SUBTIPO"];	
-														this.Stipo.appendChild(opt);
-													}
-													
-			
-						//lang.hitch(this,this.findName(featuresSet.features[i].attributes["SUBTIPO"]))
-
-	    */
