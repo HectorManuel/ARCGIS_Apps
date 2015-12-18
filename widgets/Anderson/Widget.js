@@ -63,7 +63,8 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
   hideReferencias:false,
   hideComercios:false,
   checkNotClick:false,
-  
+  checkNotClickReference:false,
+  comboBoxMem:null,
   treeCheckItems: [],
   treeCheckedItemsComercios:[],
   selectedComerceArray:[],
@@ -180,7 +181,7 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
 				        }
 				        
 				        this.NAICS.splice(1, 1);
-				        var store = ComboBox.ComboBoxMemory(this.NAICS);
+				        this.comboBoxMem= ComboBox.ComboBoxMemory(this.NAICS);
 				        //this.box = ComboBox.CreateComboBox(store);      
 				        //this.box.placeAt(this.typesOfCommerce);
 	              this.box = new FilteringSelect({
@@ -189,12 +190,20 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
                 value:"categorias",
                 autoComplete: true,
                 autoWidth:true,
-                store: store,
+                store:this.comboBoxMem,
                 searchAttr:"name",
                 onChange: lang.hitch(this, function(){
                             if(this.box){
                               var currentValue = this.box.get('displayedValue');
-                              this.ProcessAndRecord(currentValue);  
+                              if(currentValue != "Seleccione Categoría"){
+                                this.ProcessAndRecord(currentValue);
+                                domStyle.set(this.cucar, {display:'block'});
+                              }
+                              else{
+                                this.justCruising = true;
+                                this.ExtentChange();
+                              }
+                                
                              }
                          })
                 //labelAttr: "label",
@@ -243,6 +252,7 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
 	    this.tree = TreeView.CreateTree();
 	    this.tree.placeAt(this.treeViewBody);
 	    this.tree.on("checkBoxClick", lang.hitch(this,this.CheckBoxIsClicked));
+	    this.tree.on("click", lang.hitch(this, this.ReferenceClicked));
 	    this.tree.startup();
 	    
 	    TreeView.CreateStoreComercios();
@@ -250,6 +260,7 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
 	    this.treeComercios.placeAt(this.treeViewBodyComercios);
 	    this.treeComercios.on("checkBoxClick", lang.hitch(this,this.CheckBoxComercios));
 	    this.treeComercios.on("click", lang.hitch(this,this.ItemClicked));
+	    //this.treeComercios.on("delete", lang.hitch(this,this.DeletedItem));
 	    this.treeComercios.startup();
     	
     	on(this.btnAdd, "click", lang.hitch(this, this.addQuery));
@@ -263,6 +274,23 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
     	//dojo.connect(this.box, 'onChange', this.ProcessAndRecord()); 
     	
    },
+
+
+//****************************COMERCIO AND PUNTOS DE REFERENCIAS MAYOR CODE AREA*****************
+//***********************************************************************************************
+
+   ReferenceClicked:function(item, node,event){
+     //poner botones
+     if(!this.checkNotClickReference){
+       if(item.type == "comercio"){
+         this.map.centerAndZoom(item.location,15);
+       }
+     }
+     else{
+       this.checkNotClickReference = false;
+     }
+   },
+   
    //"<button class='spanDivStyle' data-dojo-attach-event='click:DeleteCommerceType' data-dojo-attach-point='"+ value +"' id='"+ value +"'>"+ value +"</button>";
    ProcessAndRecord: function(value){
      var index = this.selectedComerceArray.indexOf(value);
@@ -271,7 +299,13 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
 
        this.selectedComerceArray.push(value);
        TreeView.AddToMemoryComercio(value, value, 'tipo', 'R', null);
-       this.map.setZoom(15); 
+       var level = this.map.getLevel();
+       if(level != 15){
+         this.map.setZoom(15);
+       }
+       else{
+         this.ExtentChange();
+       } 
      }
      else{
        console.log("el valor fue escogido");
@@ -279,66 +313,12 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
      }
      
    },
-   
-
-
-/* each time a checkbox is clicked this function will run 
- executing and drawing the point in the map*/
-   CheckBoxIsClicked : function(item, node, event){
-     console.log(node);
-     this.justCruising = false;
-     var test = node.getChildren();
-     node.getChildren().forEach(lang.hitch(this,function(node){
-     if(node.item.type =="comercio"){
-         if(node.get("checked")){
-           if(this.treeCheckItems.indexOf(node.item.id)>-1)
-           {
-             this.treeCheckItems.splice(this.treeCheckItems.indexOf(node.item.id),1);
-           }
-           this.treeCheckItems.push(node.item.id);
-         }
-         else{
-           console.log(node.item.id);
-           var index = this.treeCheckItems.indexOf(node.item.id);
-           if(index > -1)
-           {
-             this.treeCheckItems.splice(index,1);
-           }
-         }
-       }
-       else{
-         //si no es comercios, va a buscar los children de el objecto a ver si tiene children
-         node.getChildren().forEach(lang.hitch(this, function(node){
-           if(node.item.type =="comercio"){
-             if(node.get("checked")){
-               if(this.treeCheckItems.indexOf(node.item.id)>-1)
-               {
-                 this.treeCheckItems.splice(this.treeCheckItems.indexOf(node.item.id),1);
-               }
-               this.treeCheckItems.push(node.item.id);
-             }
-             else{
-               console.log(node.item.id);
-               var index = this.treeCheckItems.indexOf(node.item.id);
-               if(index > -1)
-               {
-                 this.treeCheckItems.splice(index,1);
-               }
-             }
-           }
-         }));
-       }
-   }));
-       this.setFeatures(node);
-       this.getFilteredList();
-     //this.treeCheckitem = TreeView.CheckBoxClicked(item, node, event);
-   },
-   
+  
    CheckBoxComercios:function(item, node, event){
      var items = item;
      var nodes = node;
      domStyle.set(this.showComerces,{display:'block'});
-     domStyle.set(this.cucar, {display:'block'});
+     //domStyle.set(this.cucar, {display:'block'});
      this.ShowAllSelectedCommerce(node);
      this.ShowCommerceOnMap();
      this.checkNotClick = true;
@@ -387,10 +367,31 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
      }
      TreeView.UnCheckCommerce();
      this.ExtentChange();
+     domStyle.set(this.showComerces,{display:'none'});
+     
    },
-   
+
    ClearAllComercios: function(){
      TreeView.ClearStoreCommerce();
+     var obj = this.comboBoxMem.get("categorias");
+     // for(i= this.selectedComerceArray.length; i>=0; i--){
+       // this.selectedComerceArray.remove(i);  
+     // }
+     this.selectedComerceArray.splice(0, this.selectedComerceArray.length);
+     domStyle.set(this.cucar, {display:'none'});
+     domStyle.set(this.showComerces,{display:'none'});
+     this.box.set("value",obj.id);
+   },
+   
+   ClearAllPoints: function(){
+     this.justCruising = true;
+     var PointStore = TreeView.myStore;
+     if(this.treeCheckItems.length>0){
+       this.treeCheckItems.splice(0, this.treeCheckItems.length);
+     }
+     TreeView.UncheckReference();
+     this.ExtentChange();
+     domStyle.set(this.ClearCheckPoints,{display:"none"});
    },
    
    SetFeaturesComercios: function(child){
@@ -408,6 +409,61 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
            }
          }
        }
+   },
+   
+      
+/* each time a checkbox is clicked this function will run 
+ executing and drawing the point in the map*/
+   CheckBoxIsClicked : function(item, node, event){
+     console.log(node);
+     this.justCruising = false;
+     var test = node.getChildren();
+     node.getChildren().forEach(lang.hitch(this,function(node){
+     if(node.item.type =="comercio"){
+         if(node.get("checked")){
+           if(this.treeCheckItems.indexOf(node.item.id)>-1)
+           {
+             this.treeCheckItems.splice(this.treeCheckItems.indexOf(node.item.id),1);
+           }
+           this.treeCheckItems.push(node.item.id);
+         }
+         else{
+           console.log(node.item.id);
+           var index = this.treeCheckItems.indexOf(node.item.id);
+           if(index > -1)
+           {
+             this.treeCheckItems.splice(index,1);
+           }
+         }
+       }
+       else{
+         //si no es comercios, va a buscar los children de el objecto a ver si tiene children
+         node.getChildren().forEach(lang.hitch(this, function(node){
+           if(node.item.type =="comercio"){
+             if(node.get("checked")){
+               if(this.treeCheckItems.indexOf(node.item.id)>-1)
+               {
+                 this.treeCheckItems.splice(this.treeCheckItems.indexOf(node.item.id),1);
+               }
+               this.treeCheckItems.push(node.item.id);
+             }
+             else{
+               console.log(node.item.id);
+               var index = this.treeCheckItems.indexOf(node.item.id);
+               if(index > -1)
+               {
+                 this.treeCheckItems.splice(index,1);
+               }
+             }
+           }
+         }));
+       }
+   }));
+   this.checkNotClickReference = true;
+   this.setFeatures(node);
+   this.getFilteredList();
+   domStyle.set(this.ClearCheckPoints, {display:"block"});
+     //this.treeCheckitem = TreeView.CheckBoxClicked(item, node, event);
    },
    
    setFeatures: function(node){
@@ -481,12 +537,14 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
    	}
    	var query = new Query();
    	var queryReference = new Query();
-   	query.geometry = extent;
+   	
    	if(!extent){
    	  queryReference.geometry = this.map.extent;
+   	  query.geometry = this.map.extent;
    	}
    	else{
    	  queryReference.geometry = extent;
+   	  query.geometry = extent;
    	}
    	if(this.justCruising){
      	var valueTest = this.box.get('displayedValue');
@@ -608,8 +666,6 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
        this.VD=true;
        //refresh layer
        //this.ExtentChange();
-       
-       
      }
    },
    
@@ -629,17 +685,6 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
        //refresh view
        this.ExtentChange();
      }
-   },
-   
-   abrete : function(){
-   	//this.myDialog.set("content", );
-   	  //this.tree.destroy();
-      // this.AlFin.appendChild(grid.domNode);
-     	// grid.startup();
-   	  //this.dialogo.show();
-   		//this.dialogo.hidden = true;
-   		//this.dialogo.hidden = false;
-   		//this.myDialog.show();
    },
    
 
@@ -662,7 +707,7 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
 
    },
    
-   
+
    
    PresentComercios : function(evt){
    		var symbol = new SimpleMarkerSymbol(
@@ -709,6 +754,9 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
 	   	LayerComercios.queryFeatures(query,lang.hitch(this,this.SelectInBuffer));
 	   	//LayerComercios.queryFeatures(query,lang.hitch(this,this.SelectInBuffer));
    },
+
+//***********************COMERCIO AND PUNTOS DE REFERENCIAS MAYOR CODE AREA END******************
+//***********************************************************************************************
    
    SelectInBuffer : function(response){
    	var feature;
@@ -928,16 +976,11 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
     
     //submit query and divide results in detail for count information
     submitQuery: function(){ 
-    	//lastWork= finishWork;
-    	//listAnterior = listToQuery;
-    		finishWork = WhereGen.WhereBuilder(listToQuery);
+
+    	finishWork = WhereGen.WhereBuilder(listToQuery);
 
     	var fieldRange = ["*"];
     	var orderBy = ["OBJECTID"];
-
-/*
-    	referenceLayer.setDefinitionExpression(finishWork);
-    	referenceLayer.show();*/
 
     	
     	QueryHelper.ExecuteQuery(serviceUrl, finishWork, fieldRange, true,false,
@@ -945,139 +988,141 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
             	console.log(error);
             	}, 
 	            lang.hitch(this, function(featureSet){
-	            	  console.log(featureSet.features);
-	            	  fullList = featureSet.features;
-	            	  //domConstruct.empty(this.tableBody);
-  	  						domConstruct.empty(this.tableBodyGross);
-	            	  var added =[];
-	            	  var exist=false;
-	            	  var row = domConstruct.toDom("<tr><td class='ter'>"+"Total values obtained"+": "+"</td><td class='ter2'>"+featureSet.features.length+"</td></tr>")
-	            	  this.map.centerAndZoom(featureSet.features[0].geometry, 15);
-	        	  		domConstruct.place(row,this.tableBodyGross);
-	        	  		//TreeView.AddRootToMemory("R", "Total: "+featureSet.features.length ,"result", null);
-	        	  		/*
-            	    listAnterior = listToQuery;*/
-            	    //var tree = new TreeView({data:listToQuery}).placeAt(this.treeViewBody);
-            	    //TreeView.CreateStore();
-            	    
-            	    //TreeView.CleanMemory();
-									//tree.startup();
-	        	  		
-	            	  //obtain gross count by category and total
-	            	  for(var i=0; i< listToQuery.length; i++)
-	            	  {
-	            	  	var counter = 0;
-	          	  		if (added.length == 0 || added.length == undefined)
-	          	  		{
-	          	  			added.push("");
-	          	  		}
-	          	  		for(var j=0; j<added.length;j++){
-	          	  			if(listToQuery[i].tipo == added[j])
-	          	  			{
-	          	  				exist = true;
-	          	  				j = added.length-1;
-	          	  			}
-	          	  			else 
-	          	  			{exist = false;}
-	          	  		}
-	          	  		
-	          	  		if(!exist){
-	          	  		  var firstCount=0;
-	          	  		  for(var n=0;n< featureSet.features.length; n++)
+	              TreeView.ClearStore();
+            	  console.log(featureSet.features);
+            	  fullList = featureSet.features;
+            	  //domConstruct.empty(this.tableBody);
+	  						domConstruct.empty(this.tableBodyGross);
+	  						domStyle.set(this.lastResultados, {display:"block"});
+            	  var added =[];
+            	  var exist=false;
+            	  var row = domConstruct.toDom("<tr><td class='ter'>"+"Total values obtained"+": "+featureSet.features.length+"</td></tr>")
+            	  this.map.centerAndZoom(featureSet.features[0].geometry, 15);
+        	  		domConstruct.place(row,this.tableBodyGross);
+        	  		//TreeView.AddRootToMemory("R", "Total: "+featureSet.features.length ,"result", null);
+        	  		/*
+          	    listAnterior = listToQuery;*/
+          	    //var tree = new TreeView({data:listToQuery}).placeAt(this.treeViewBody);
+          	    //TreeView.CreateStore();
+          	    
+          	    //TreeView.CleanMemory();
+								//tree.startup();
+        	  		
+            	  //obtain gross count by category and total
+            	  for(var i=0; i< listToQuery.length; i++)
+            	  {
+            	  	var counter = 0;
+          	  		if (added.length == 0 || added.length == undefined)
+          	  		{
+          	  			added.push("");
+          	  		}
+          	  		for(var j=0; j<added.length;j++){
+          	  			if(listToQuery[i].tipo == added[j])
+          	  			{
+          	  				exist = true;
+          	  				j = added.length-1;
+          	  			}
+          	  			else 
+          	  			{exist = false;}
+          	  		}
+          	  		
+          	  		if(!exist){
+          	  		  var firstCount=0;
+          	  		  for(var n=0;n< featureSet.features.length; n++)
+                    {
+                      if(String(featureSet.features[n].attributes["TIPO"]) == listToQuery[i].tipo)
                       {
-                        if(String(featureSet.features[n].attributes["TIPO"]) == listToQuery[i].tipo)
-                        {
-                          firstCount++;
-                        }
+                        firstCount++;
                       }
-	          	  		  
-	          	  			var idParent = listToQuery[i].tipo;
-	          	  			var nameParent = "Total: " + firstCount +" - "+ informacion.layers[1].types[parseInt(listToQuery[i].tipo)].name;
-	          	  			var typeParent = 'tipoLocal';
-	          	  			var parentParent = "R";
-	          	  			
-	          	  			TreeView.AddToMemory(idParent, nameParent,typeParent,parentParent, null);
-	          	  			var tempListForMunicipio= [];
-	          	  			for(var key in listToQuery){
-	          	  			  if(listToQuery.hasOwnProperty(key)){
-	          	  			    var obj = listToQuery[key];
-	          	  			    var exist2=false;
-	          	  			    
-	          	  			    if(tempListForMunicipio.length == 0){
-	          	  			      tempListForMunicipio.push({municipio: obj.municipio, tipo: obj.tipo});
-	          	  			      TreeView.AddToMemory(obj.municipio+"_"+obj.tipo, obj.municipio, "municipios", obj.tipo, null);
-	          	  			    }
-	          	  			    else{
-	          	  			      //for design to avoid duplicate errors
-	          	  			      for(key in tempListForMunicipio){
-	          	  			        if(tempListForMunicipio.hasOwnProperty(key)){
-	          	  			          var ob = tempListForMunicipio[key];
-	          	  			          if(ob.municipio==obj.municipio && ob.tipo==obj.tipo){
-	          	  			            exist2=true;
-	          	  			          }
-	          	  			        }
-	          	  			      }
-	          	  			      if(!exist2){
-	          	  			        TreeView.AddToMemory(obj.municipio+"_"+obj.tipo, obj.municipio, "municipios", obj.tipo, null);
-	          	  			        tempListForMunicipio.push({municipio: obj.municipio, tipo: obj.tipo})
-                            }
-                            
+                    }
+          	  		  
+          	  			var idParent = listToQuery[i].tipo;
+          	  			var nameParent = "Total: " + firstCount +" - "+ informacion.layers[1].types[parseInt(listToQuery[i].tipo)].name;
+          	  			var typeParent = 'tipoLocal';
+          	  			var parentParent = "R";
+          	  			
+          	  			TreeView.AddToMemory(idParent, nameParent,typeParent,parentParent, null);
+          	  			var tempListForMunicipio= [];
+          	  			for(var key in listToQuery){
+          	  			  if(listToQuery.hasOwnProperty(key)){
+          	  			    var obj = listToQuery[key];
+          	  			    var exist2=false;
+          	  			    
+          	  			    if(tempListForMunicipio.length == 0){
+          	  			      tempListForMunicipio.push({municipio: obj.municipio, tipo: obj.tipo});
+          	  			      TreeView.AddToMemory(obj.municipio+"_"+obj.tipo, obj.municipio, "municipios", obj.tipo, null);
+          	  			    }
+          	  			    else{
+          	  			      //for design to avoid duplicate errors
+          	  			      for(key in tempListForMunicipio){
+          	  			        if(tempListForMunicipio.hasOwnProperty(key)){
+          	  			          var ob = tempListForMunicipio[key];
+          	  			          if(ob.municipio==obj.municipio && ob.tipo==obj.tipo){
+          	  			            exist2=true;
+          	  			          }
+          	  			        }
+          	  			      }
+          	  			      if(!exist2){
+          	  			        TreeView.AddToMemory(obj.municipio+"_"+obj.tipo, obj.municipio, "municipios", obj.tipo, null);
+          	  			        tempListForMunicipio.push({municipio: obj.municipio, tipo: obj.tipo})
+                          }
+                          
 
-	          	  			    }
-	          	  			  }
-	          	  			}
-	          	  			
-	          	  			for(var n=0;n< featureSet.features.length; n++)
-		            	  	{
-		            	  		if(String(featureSet.features[n].attributes["TIPO"]) == listToQuery[i].tipo)
-		            	  		{
-		            	  			counter++;
-			          	  			var idChild = featureSet.features[n].attributes["OBJECTID"];
-			          	  			var nameChild = featureSet.features[n].attributes["NOMBRE"];
-			          	  			var typeChild = 'comercio';
-			          	  			var parentChild = featureSet.features[n].attributes["MUNICIPIO"] +"_"+ featureSet.features[n].attributes["TIPO"];//listToQuery[n].municipio;
-			          	  			var geom = featureSet.features[n].geometry;
-			          	  			TreeView.AddToMemory(idChild, nameChild, typeChild, parentChild, geom);
-		            	  		}
-		            	  	}
-		            	  	//var row = domConstruct.toDom("<tr><td class='ter'>"+informacion.layers[1].types[parseInt(listToQuery[i].tipo)].name+": "+"</td><td class='ter2'>"+counter+"</td></tr>")
-		          	  		//domConstruct.place(row,this.tableBodyGross);
-		          	  		added.push(listToQuery[i].tipo);
-	          	  		}
-	            	  	
-	            	  }
-	            	  
-	            	  //Divide in detail            	  
-	            	  for(var i=0; i< listToQuery.length; i++)
-	            	  {
-	            	  	var counter = 0;
-	            	  	for(var n=0;n< featureSet.features.length; n++)
+          	  			    }
+          	  			  }
+          	  			}
+          	  			
+          	  			for(var n=0;n< featureSet.features.length; n++)
 	            	  	{
-	            	  		if(String(featureSet.features[n].attributes["TIPO"]) == listToQuery[i].tipo && String(featureSet.features[n].attributes["MUNICIPIO"]) == listToQuery[i].municipio)
+	            	  		if(String(featureSet.features[n].attributes["TIPO"]) == listToQuery[i].tipo)
 	            	  		{
 	            	  			counter++;
+		          	  			var idChild = featureSet.features[n].attributes["OBJECTID"];
+		          	  			var nameChild = featureSet.features[n].attributes["NOMBRE"];
+		          	  			var typeChild = 'comercio';
+		          	  			var parentChild = featureSet.features[n].attributes["MUNICIPIO"] +"_"+ featureSet.features[n].attributes["TIPO"];//listToQuery[n].municipio;
+		          	  			var geom = featureSet.features[n].geometry;
+		          	  			TreeView.AddToMemory(idChild, nameChild, typeChild, parentChild, geom);
 	            	  		}
 	            	  	}
-	            	  	// var row = domConstruct.toDom("<tr><td class='ter'>"+informacion.layers[1].types[parseInt(listToQuery[i].tipo)].name+" en "+listToQuery[i].municipio+": "+"</td><td class='ter2'>"+counter+"</td></tr>")
-	          	  		// domConstruct.place(row,this.tableBody);
-	            	  }
-	            	  
-	            	  domStyle.set(this.requestInfo,{display:'none'});
-	            	  domStyle.set(this.Results,{display:'block'});
+	            	  	//var row = domConstruct.toDom("<tr><td class='ter'>"+informacion.layers[1].types[parseInt(listToQuery[i].tipo)].name+": "+"</td><td class='ter2'>"+counter+"</td></tr>")
+	          	  		//domConstruct.place(row,this.tableBodyGross);
+	          	  		added.push(listToQuery[i].tipo);
+          	  		}
+            	  	
+            	  }
+            	  
+            	  //Divide in detail            	  
+            	  for(var i=0; i< listToQuery.length; i++)
+            	  {
+            	  	var counter = 0;
+            	  	for(var n=0;n< featureSet.features.length; n++)
+            	  	{
+            	  		if(String(featureSet.features[n].attributes["TIPO"]) == listToQuery[i].tipo && String(featureSet.features[n].attributes["MUNICIPIO"]) == listToQuery[i].municipio)
+            	  		{
+            	  			counter++;
+            	  		}
+            	  	}
+            	  	// var row = domConstruct.toDom("<tr><td class='ter'>"+informacion.layers[1].types[parseInt(listToQuery[i].tipo)].name+" en "+listToQuery[i].municipio+": "+"</td><td class='ter2'>"+counter+"</td></tr>")
+          	  		// domConstruct.place(row,this.tableBody);
+            	  }
+            	  
+            	  domStyle.set(this.requestInfo,{display:'none'});
+            	  domStyle.set(this.Results,{display:'block'});
 
-            	    this.tree.expandAll();
+          	    this.tree.expandAll();
 
-            	    //create grid with data
-            	    var data = {
-							      identifier: 'id',
-							      items: []
-							    };
-							    var rows = fullList.length;
-							    for(var i=0, l=fullList.length; i<rows; i++){
-							      data.items.push(dojo.mixin({ id: i+1 }, fullList[i%l]));
-							    }
+          	    //create grid with data
+          	    var data = {
+						      identifier: 'id',
+						      items: []
+						    };
+						    var rows = fullList.length;
+						    for(var i=0, l=fullList.length; i<rows; i++){
+						      data.items.push(dojo.mixin({ id: i+1 }, fullList[i%l]));
+						    }
 
-        			}),orderBy);
+      			  }),orderBy);
     },
     
     
@@ -1164,7 +1209,7 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
     	domStyle.set(this.requestInfo,{display:'block'});
     	
   	  domStyle.set(this.Results,{display:'none'});
-  	  TreeView.ClearStore();
+  	  //TreeView.ClearStore();
   	  this.justCruising= true;
   	  if(!lastWork){
   	  	lastWork = finishWork;
@@ -1221,7 +1266,7 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
 	    {
 	        this.ZipCodeList.remove(i);
 	    }
-	    this.ZipCodeList.disabled ="dissabled";
+	    this.ZipCodeList.disabled ="disabled";
     	var UrbLength= this.urbRutaList.options.length;
 	    for (var i=UrbLength-1; i>=1;i--)
 	    {
@@ -1233,7 +1278,12 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
 	    {
 	        this.Stipo.remove(i);	    
       }
+      for(var i = this.Establecimiento.length ; i>=1; i--)
+      {
+        this.Establecimiento.remove(i);
+      }
 	    this.Stipo.disabled = "disabled";
+	    this.Establecimiento.disabled = "disabled"
       var tipejo = this.tipo;
     	tipejo.selectedIndex = 0;
     	

@@ -23,7 +23,7 @@
         <div  data-dojo-type="dijit/layout/ContentPane" style="padding-right:0px; height:100%; padding:4px !important" title="Puntos de Referencias" data-dojo-props="selected:true">
             <div data-dojo-attach-point="requestInfo" data-dojo-id="requestInfo" style="display:block">
               
-              <button class="btnStyle2" data-dojo-attach-point="lastResultados"  data-dojo-attach-event="click:GetLastQuery"id="resultados">Ultimos Resultados</button>
+              <button class="btnStyle2" data-dojo-attach-point="lastResultados"  data-dojo-attach-event="click:GetLastQuery" id="lastresultados" style="display:none">Ultimos Resultados</button>
                 <div class="SubDiv">
                     <!-- <p>
                         Tipo
@@ -104,7 +104,6 @@
                <br />
                <br />
                <table data-dojo-attach-point="TableResultsGross">
-                 <thead>Total Results</thead>
                  <tbody data-dojo-attach-point="tableBodyGross">
                    
                  </tbody>
@@ -115,10 +114,11 @@
                  <tbody data-dojo-attach-point="tableBody">
                    
                  </tbody>
-               </table> -->
-               <button id="filtroResultados" data-dojo-attach-point="FiltrarResultadosPuntos" data-dojo-attach-event="click:getFilteredList">filtral</button>
-               <button onclick="dialogo.show()" data-dojo-attach-event="click: abrete" data-dojo-attach-point="abre" id="abre">Abrir</button>
-               <div id="bodyTree" data-dojo-attach-point="bodyTree" style="width:100%">  
+               </table> -->     
+         
+               <button class="btnStyle2" data-dojo-attach-point="ClearCheckPoints" data-dojo-attach-event="click:ClearAllPoints" id="showComerces" style="display:none; float:left; margin-bottom:10px">Limpiar Selecci&oacute;n</button>
+
+               <div id="bodyTree" data-dojo-attach-point="bodyTree" style="width:100%: display:block; float:left">  
                 <div data-dojo-attach-point="treeViewBody" style="width:100%"></div>
                </div>
                <!-- <button  data-dojo-attach-point="abre" id="abre">Abrir</button> -->
@@ -137,7 +137,7 @@
         <!--Segundo tab donde estan las cosas de comercios-->
         <div data-dojo-type="dijit/layout/ContentPane" style="padding-left:0px; height:100%; padding:4px !important" title="Establecimientos Comerciales">
               <!-- <input id="typesOfCommerce" data-dojo-attach-point="typesOfCommerce" style="margin-bottom: 10px" /> -->
-              <div style="    font-size: 1.5em;font-weight:600;margin-top: 5px;display:block;">Comercios</div>
+              <div style="    font-size: 1.5em;font-weight:600;margin-top: 5px;margin-bottom:10px; display:block;">Comercios</div>
               <div id="typesOfCommerce" data-dojo-attach-point="typesOfCommerce" style="margin-bottom: 0px">
                 
               </div>
@@ -146,16 +146,10 @@
 
               </div> -->
               <!-- <button class="btnStyle2"></button> -->
-              <p style="margin-top:10px">Comercios Encontrados:</p>
+              <p style="margin-top:10px; margin-bottom:10px">Comercios Encontrados:</p>
                            
               <button class="btnStyle2" data-dojo-attach-point="showComerces" data-dojo-attach-event="click:ClearAllSelectedCheckBox" id="showComerces" style="display:none; float:left; margin-bottom:10px">Limpiar Selecci&oacute;n</button>
-              <button class="btnDeleteStyle" data-dojo-attach-point="cucar" data-dojo-attach-event="click:ClearAllComercios" id="cucar" style="display:none;float:left; margin-bottom: 10px">Limpiar Lista</button>
-              
-              <!-- <div data-dojo-attach-point="listaDeLosComercios" style="display:none">
-                  <div id="listaComercios" style="margin-top:5px; width:100%;max-height:300px; overflow-y:auto" data-dojo-attach-point="listaComercios" data-dojo-attach-event="click:ActivateEditButton">
-      
-                  </div>
-              </div> -->
+              <button class="btnDeleteStyle" data-dojo-attach-point="cucar" data-dojo-attach-event="click:ClearAllComercios" id="cucar" style="display:none;float:left; margin-bottom: 10px">Borrar Lista</button>
               <div data-dojo-attach-point="treeViewBodyComercios" style="width:100%; max-height:450px;overflow-y:auto; margin-top: 10px"></div>
 
               

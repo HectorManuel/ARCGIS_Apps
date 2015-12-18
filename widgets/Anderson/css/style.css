@@ -58,7 +58,7 @@ p {
 
 .claro .dijitTextBox{
 	height:26px;
-	width: 100%;
+	width: 95%;
 	margin-left:5px;
 	border-radius:3px;
 }
@@ -79,7 +79,7 @@ p {
 }
 
 .claro .dijitTabPaneWrapper{
-	height:655px !important;
+	height:653px !important;
 }
 
 .claro .dijitTabContainerTop-tabs .dijitTab{
@@ -194,18 +194,14 @@ p {
 
 	
 table, tbody,td {
-	background:#eee;
+	background:#fff;
 	display:block;
 	
 }
 .ter {
-	font-size:14px;
-	font-weight:600;
+	font-size:1em;
 }
-.ter2 {
-	font-size:12px;
-	
-}
+
 tr {
 	padding-top:4px;
 	display:block;

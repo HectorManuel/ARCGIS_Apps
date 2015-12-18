@@ -65,6 +65,8 @@ function (declare, array, lang, kernel, domConstruct, i18n, _WidgetsInTemplateMi
           leafIcons:false,
           openOnChecked:true,
           openOnDblClick:true,
+          enableDelete:true,
+          deleteREcursive:true,
           id: "PuntosReferencias"
         });
         return this.tree;
@@ -80,7 +82,9 @@ function (declare, array, lang, kernel, domConstruct, i18n, _WidgetsInTemplateMi
         this.myStore.load({data:[{ id: 'R', name:'Results', type:'result', location:null}]});
       },
       
-      UncheckReference: function(){},
+      UncheckReference: function(){
+        this.myModel.uncheck({checked:true});
+      },
       
 //******************************************************************************************************************
 //******************************************************************************************************************
@@ -117,6 +121,8 @@ function (declare, array, lang, kernel, domConstruct, i18n, _WidgetsInTemplateMi
           leafIcons:false,
           openOnChecked:true,
           openOnDblClick:true,
+          enableDelete:true,
+          deleteREcursive:true,
           id: "ListaDeComercios"
         });
         return this.tree;

@@ -10,6 +10,7 @@ function(BaseWidget, Memory, FilteringSelect,
   return{
     ComboBoxMemory: function(data){
       var storage = new Memory({data:data});
+      console.log(storage);
       return storage;
     },
     
