@@ -1,6 +1,6 @@
 var listToQuery = [];
 var listAnterior = [];
-var fullList;
+//var fullList;
 
 var serviceUrl = "http://www.mapas.gmtgis.net/arcgis/rest/services/Mapas/EstablecimientosComerciales/MapServer/1";
 var serviceUrl2 = "http://www.mapas.gmtgis.net/arcgis/rest/services/Mapas/EstablecimientosComerciales/MapServer/0";
@@ -70,7 +70,7 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
   selectedComerceArray:[],
   VC : true,
   VD : true,
-  
+  fullList:null,
   loading: null,
   
   //selectedComerceStore: null,
@@ -103,7 +103,7 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
             function(error){console.log(error);}, 
             function(featureSet){
             	  console.log(featureSet.features);
-            	  //var featureLayer = new FeatureLayer(serviceUrl);
+            	  
 
       	      	var i;
 					    	for (i=0; i < featureSet.features.length; i++){
@@ -996,7 +996,7 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
 	            lang.hitch(this, function(featureSet){
 	              TreeView.ClearStore();
             	  console.log(featureSet.features);
-            	  fullList = featureSet.features;
+            	  this.fullList = featureSet.features;
             	  //domConstruct.empty(this.tableBody);
 	  						domConstruct.empty(this.tableBodyGross);
 	  						domStyle.set(this.lastResultados, {display:"block"});
@@ -1005,14 +1005,7 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
             	  var row = domConstruct.toDom("<tr><td class='ter'>"+"Total values obtained"+": "+featureSet.features.length+"</td></tr>")
             	  this.map.centerAndZoom(featureSet.features[0].geometry, 15);
         	  		domConstruct.place(row,this.tableBodyGross);
-        	  		//TreeView.AddRootToMemory("R", "Total: "+featureSet.features.length ,"result", null);
-        	  		/*
-          	    listAnterior = listToQuery;*/
-          	    //var tree = new TreeView({data:listToQuery}).placeAt(this.treeViewBody);
-          	    //TreeView.CreateStore();
-          	    
-          	    //TreeView.CleanMemory();
-								//tree.startup();
+
         	  		
             	  //obtain gross count by category and total
             	  for(var i=0; i< listToQuery.length; i++)
@@ -1123,9 +1116,9 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
 						      identifier: 'id',
 						      items: []
 						    };
-						    var rows = fullList.length;
-						    for(var i=0, l=fullList.length; i<rows; i++){
-						      data.items.push(dojo.mixin({ id: i+1 }, fullList[i%l]));
+						    var rows = this.fullList.length;
+						    for(var i=0, l=this.fullList.length; i<rows; i++){
+						      data.items.push(dojo.mixin({ id: i+1 }, this.fullList[i%l]));
 						    }
 
       			  }),orderBy);
