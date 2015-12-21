@@ -38,7 +38,7 @@ define(['./CustomList/CustomList','dijit/registry','./ComboBox/ComboBox','dijit/
   "esri/tasks/query", "esri/layers/Domain","esri/request", "./WhereGen","./LayerHelper",
   "esri/geometry/Circle","esri/symbols/SimpleLineSymbol","esri/renderers/SimpleRenderer",
   "esri/symbols/SimpleMarkerSymbol", "esri/graphic", "dojo/store/Memory",
-  "dojox/grid/EnhancedGrid","dojo/data/ItemFileWriteStore", "./TreeView/TreeView",
+  "dojox/grid/EnhancedGrid","dojo/data/ItemFileWriteStore", "./TreeView/TreeView","dojox/widget/Standby",
   
   "dijit/layout/TabContainer", "dijit/layout/ContentPane","dijit/form/_AutoCompleterMixin",
 	"dojo/domReady!"],
@@ -47,7 +47,7 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
 				TextBox,DateTextBox,TimeTextBox,on,template, DataBrowser, domConstruct, 
 				QueryHelper, FocusTool, FeatureLayer, SimpleFillSymbol, Color, Query, Domain,request, 
 				WhereGen, LayerHelper, Circle, SimpleLineSymbol, SimpleRenderer, SimpleMarkerSymbol, Graphic,
-				Memory, EnhanceGrid, ItemFileWriteStore, TreeView) {
+				Memory, EnhanceGrid, ItemFileWriteStore, TreeView, StandBy) {
   var clazz = declare([BaseWidget], {
    // templateString: '<div>This is a very simple widget. ' +
   //  '<input type="button" value="Get Map Id" data-dojo-attach-event="click:_getMapId">.</div>',
@@ -71,6 +71,8 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
   VC : true,
   VD : true,
   
+  loading: null,
+  
   //selectedComerceStore: null,
 
   NAICS:[{id:"categorias", name:"Seleccione Categoría", label:"Seleccione categoría"}],
@@ -81,15 +83,22 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
    startup: function(){
    		parser.parse();
    		//pase.parse();
-   		
-   		
-   		
+   		     
+      this.loading = new StandBy({target: this.LoadingScreen});
+      document.body.appendChild(this.loading.domNode);
+      this.loading.image = "widgets/Anderson/images/Loading.GIF";
+      this.loading.color = "#ECECEC";
+      this.loading.startup();
+
+
+
    		var whereClause = "TIPO='0'";
     	var fieldRange = ["MUNICIPIO"];
     	var whereClause1 = "OBJECTID>='0'";
     	var field = ["TIPO"];
     	var order =["MUNICIPIO"];
     	var orderTipo=["TIPO"];
+    	this.loading.show();
     	QueryHelper.ExecuteQuery(serviceUrl, whereClause1, field, false,true,
             function(error){console.log(error);}, 
             function(featureSet){
@@ -173,10 +182,6 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
 				          var stringOfId = String(featureSet.features[i].attributes["NAICS_CODE"]);
 				          var description = featureSet.features[i].attributes["NAICS_DESCRIPTION"];
 				          this.NAICS.push({id:stringOfId, name:description, label:description});
-				        	// var opt = document.createElement('option');
-				        	// opt.innerHTML = featureSet.features[i].attributes["NAICS_DESCRIPTION"];
-				        	// opt.value = featureSet.features[i].attributes["NAICS_DESCRIPTION"];
-				        	// this.ZipCodeList2.appendChild(opt);
 
 				        }
 				        
@@ -211,8 +216,9 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
               }, this.typesOfCommerce);
         				        
 				        this.box.startup();
+				        this.loading.hide();
 				        
-    
+				        
 
       		}),order3);
         		
@@ -228,7 +234,7 @@ function(CustomList, registry, ComboBox, FilteringSelect, declare, BaseWidget, o
     	//pase.parse();
     	//var databrowser= new DataBrowser();
     	var DataDiv = '<div data-dojo-attach-point="db" data-dojo-attach-id="db" style="width:90%; height:90%; border: 1px solid #A8A8A8;"></div>';
-    	
+
     	//var node = domConstruct.create("div");
     	
     	//DataBrowser.DataBro();

@@ -7,164 +7,118 @@
     <div>
       <div data-dojo-attach-point="ReferenceLegend" >
         <img src="widgets/Anderson/images/referenciasIcon.PNG" style="display:block; float:left">
-        <p style="margin-left: 5px;margin-right: 10px; margin-top:0px; display:block; float:left; vertical-align:center">Puntos de referencias</p>
+        <p style="margin-left: 5px;margin-right: 10px; margin-top:0px; display:block; float:left; vertical-align:center">
+          Puntos de referencias
+        </p>
         <button class="visibilityBtn" data-dojo-attach-point="visibilityR" data-dojo-attach-event="click:ChangeLayerVisibilityR"></button>
-        <!-- <img id="VisibilityR" data-dojo-attach-point="VisibilityR" src="widgets/Anderson/images/visibilityIcon.png" width="22px" heigth="22px"> -->
       </div>
       <div data-dojo-attach-point="CommerceLegend">
         <img src="widgets/Anderson/images/comerciosIcon.PNG" style="display:block; float:left">
-        <p style="margin-left: 5px;margin-right: 10px; margin-top:0px; display:block; float:left">Comercios</p>
+        <p style="margin-left: 5px;margin-right: 10px; margin-top:0px; display:block; float:left">
+          Comercios
+        </p>
         <button class="visibilityBtn" data-dojo-attach-point="visibilityC" data-dojo-attach-event="click:ChangeLayerVisibilityC"></button>
-        <!-- <img id="VisibilityC" data-dojo-attach-point="VisibilityC" src="widgets/Anderson/images/visibilityIcon.png" height="22px" width="22px"> -->
       </div>
     </div>
   </div>
-    	<div data-dojo-type="dijit/layout/TabContainer" style="width: 100%; height:100%; margin-left: 0px; border-color:transparent !important; padding: 0px 0px 0px 0px !important;" useMenu="false">
-        <div  data-dojo-type="dijit/layout/ContentPane" style="padding-right:0px; height:100%; padding:4px !important" title="Puntos de Referencias" data-dojo-props="selected:true">
-            <div data-dojo-attach-point="requestInfo" data-dojo-id="requestInfo" style="display:block">
-              
-              <button class="btnStyle2" data-dojo-attach-point="lastResultados"  data-dojo-attach-event="click:GetLastQuery" id="lastresultados" style="display:none">Ultimos Resultados</button>
-                <div class="SubDiv">
-                    <!-- <p>
-                        Tipo
-                    </p> -->
-                    <select id="tipo" data-dojo-attach-point="tipo" data-dojo-attach-event="onChange:tipoIndicator">
-                      <option value="" disabled>Tipo de negocio</option>
-                    </select>
-                </div>
-                
-                <div class="SubDiv">
-                    <!-- <p>
-                        Municipio
-                    </p> -->
-                    <select id="municipio" data-dojo-attach-point="municipio" data-dojo-attach-event="onChange:cambioDeMunicipio"  placeholder="selecciona municipio" disabled>
-                        <option value="" disabled>Municipio</option>
-                    </select>
-                </div>
-                <div class="SubDiv">
-                    <!-- <p>
-                        Barrio
-                    </p> -->
-                    <select id="barriadas" data-dojo-attach-point="barriadas" data-dojo-attach-event="onChange:barrioIndicator" placeholder="selecciona Barrio" disabled>
-                        <option value="" disabled>Barrio/Zona</option>
-                    </select>
-                </div>
-                <div class="SubDiv">
-                    <!-- <p>
-                        Zip Code
-                    </p> -->
-                    <select id="ZipCodeList" data-dojo-attach-point="ZipCodeList" data-dojo-attach-event="onChange:ZipIndicator" placeholder="selecciona ZipCode" disabled>
-                        <option value="" disabled>C&oacute;digo postal</option>
-                    </select>
-                </div>
-                <div class="SubDiv">
-                    <!-- <p>
-                        Urbanizacion/Ruta
-                    </p> -->
-                    <select id="urbRutaList" data-dojo-attach-point="urbRutaList" data-dojo-attach-event="onChange:AreaIndicator" placeholder="selecciona Urb/Ruta" disabled>
-                        <option value="" disabled>Urbanizaci&Oacute;n/Ruta</option>
-                    </select>
-                </div>
-                <div class="Subtipos" data-dojo-attach-point="Subtipos">
-                    <!-- <p>
-                        Sub tipos
-                    </p> -->
-                    <select id="Stipo" data-dojo-attach-point="Stipo" data-dojo-attach-event="onChange:ModifyEstablecimientos" >
-                        <option value="" disabled>Sub Tipo</option>
-                    </select>
-                </div>
-                
-                <div class="SubDiv2" data-dojo-attach-point="SubDiv2">
-                    <!-- <p>
-                        Establecimiento
-                    </p> -->
-                    <select id="Establecimiento" data-dojo-attach-point="Establecimiento" >
-                        <option value="" disabled>Establecimiento</option>
-                    </select>
-                </div>
-                <div style="width:100%">
-                <button class="btnStyle2" data-dojo-attach-point="btnAdd" id="btnAdd">agregar</button>
-                <button class="btnStyle2" data-dojo-attach-point="actualizarCampo" style="display:none" id="someter" data-dojo-attach-event="click:UpdateQuery">Actualizar</button>
-                </div>
-                <button class="btnStyle2" data-dojo-attach-point="editSelect" data-dojo-attach-event="click:SelectedItemofListToQuery" style="margin-right:15px; display:none; float: right" id="EditSelect">Editar</button>
-                <button class="btnDeleteStyle" data-dojo-attach-point="borrar" data-dojo-attach-event="click:selection" id="borrar" style="margin-right:15px; display:none; float: right">borrame</button>
-                <div class="SubDivLista">
-                    <select id="items" style="margin-top:5px" data-dojo-attach-point="items" data-dojo-attach-event="click:ActivateEditButton" multiple>
-        
-                    </select>
-                </div>
-                <button class="btnStyle2" data-dojo-attach-point="someter"  id="someter">Someter</button>
-                <button class="btnStyle2" data-dojo-attach-point="borrarTodo"  id="borrarTodo">borrar todo</button>
-                <!-- <button class="btnStyle2" data-dojo-attach-point="lastSearch" data-dojo-attach-event="click:GetLastQuery" style="margin-right:15px; display:none; float: right" id="lastSearch">ultima busqueda</button> -->
-                
-             </div>
-             <!--RESULT SCREEN LAYOUT-->
-             <div data-dojo-attach-point="Results" data-dojo-id="Results" style="display:none">
-               <button class="btnStyle2" data-dojo-attach-point="retroceder"  id="retroceder">Nueva Busqueda</button>
-               <br />
-               <br />
-               <table data-dojo-attach-point="TableResultsGross">
-                 <tbody data-dojo-attach-point="tableBodyGross">
-                   
-                 </tbody>
-               </table>
-               
-               <!-- <table data-dojo-attach-point="TableResults">
-                 <thead>Detailed Results</thead>
-                 <tbody data-dojo-attach-point="tableBody">
-                   
-                 </tbody>
-               </table> -->     
-         
-               <button class="btnStyle2" data-dojo-attach-point="ClearCheckPoints" data-dojo-attach-event="click:ClearAllPoints" id="showComerces" style="display:none; float:left; margin-bottom:10px">Limpiar Selecci&oacute;n</button>
-
-               <div id="bodyTree" data-dojo-attach-point="bodyTree" style="width:100%: display:block; float:left">  
-                <div data-dojo-attach-point="treeViewBody" style="width:100%"></div>
-               </div>
-               <!-- <button  data-dojo-attach-point="abre" id="abre">Abrir</button> -->
-               
-               
-               <div data-dojo-type="dijit/Dialog"  data-dojo-attach-point="dialogo" data-dojo-id="dialogo" style="width:500px;height:400px; background-color: white" title="Informacion Solicitada">
-                   <div class="dijitDialogPaneContentArea" style="width:400px;height:300px;" data-dojo-attach-point="AlFin">alfin</div>
-                   
-               </div>
-               
-             </div>   
+  <div data-dojo-type="dijit/layout/TabContainer" style="width: 100%; height:100%; margin-left: 0px; border-color:transparent !important; padding: 0px 0px 0px 0px !important;" useMenu="false">
+    <div  data-dojo-type="dijit/layout/ContentPane" style="padding-right:0px; height:100%; padding:4px !important" title="Puntos de Referencias" data-dojo-props="selected:true">
+      <div data-dojo-attach-point="LoadingScreen">
+        <div data-dojo-attach-point="requestInfo" data-dojo-id="requestInfo" style="display:block">
+          <button class="btnStyle2" data-dojo-attach-point="lastResultados"  data-dojo-attach-event="click:GetLastQuery" id="lastresultados" style="display:none">
+            Ultimos Resultados
+          </button>
+          <div class="SubDiv">
+            <select id="tipo" data-dojo-attach-point="tipo" data-dojo-attach-event="onChange:tipoIndicator">
+              <option value="" disabled>Tipo de negocio</option>
+            </select>
+          </div>
+          <div class="SubDiv">
+            <select id="municipio" data-dojo-attach-point="municipio" data-dojo-attach-event="onChange:cambioDeMunicipio"  placeholder="selecciona municipio" disabled>
+              <option value="" disabled>Municipio</option>
+            </select>
+          </div>
+          <div class="SubDiv">
+            <select id="barriadas" data-dojo-attach-point="barriadas" data-dojo-attach-event="onChange:barrioIndicator" placeholder="selecciona Barrio" disabled>
+              <option value="" disabled>Barrio/Zona</option>
+            </select>
+          </div>
+          <div class="SubDiv">
+            <select id="ZipCodeList" data-dojo-attach-point="ZipCodeList" data-dojo-attach-event="onChange:ZipIndicator" placeholder="selecciona ZipCode" disabled>
+              <option value="" disabled>C&oacute;digo postal</option>
+            </select>
+          </div>
+          <div class="SubDiv">
+            <select id="urbRutaList" data-dojo-attach-point="urbRutaList" data-dojo-attach-event="onChange:AreaIndicator" placeholder="selecciona Urb/Ruta" disabled>
+              <option value="" disabled>Urbanizaci&Oacute;n/Ruta</option>
+            </select>
+          </div>
+          <div class="Subtipos" data-dojo-attach-point="Subtipos">
+            <select id="Stipo" data-dojo-attach-point="Stipo" data-dojo-attach-event="onChange:ModifyEstablecimientos" >
+              <option value="" disabled>Sub Tipo</option>
+            </select>
+          </div>
+          <div class="SubDiv2" data-dojo-attach-point="SubDiv2">
+            <select id="Establecimiento" data-dojo-attach-point="Establecimiento" >
+              <option value="" disabled>Establecimiento</option>
+            </select>
+          </div>
+          <div style="width:100%">
+            <button class="btnStyle2" data-dojo-attach-point="btnAdd" id="btnAdd">agregar</button>
+            <button class="btnStyle2" data-dojo-attach-point="actualizarCampo" style="display:none" id="someter" data-dojo-attach-event="click:UpdateQuery">Actualizar</button>
+          </div>
+          <button class="btnStyle2" data-dojo-attach-point="editSelect" data-dojo-attach-event="click:SelectedItemofListToQuery" style="margin-right:15px; display:none; float: right" id="EditSelect">Editar</button>
+          <button class="btnDeleteStyle" data-dojo-attach-point="borrar" data-dojo-attach-event="click:selection" id="borrar" style="margin-right:15px; display:none; float: right">borrame</button>
+          <div class="SubDivLista">
+            <select id="items" style="margin-top:5px" data-dojo-attach-point="items" data-dojo-attach-event="click:ActivateEditButton" multiple>  
+            </select>
+          </div>
+          <button class="btnStyle2" data-dojo-attach-point="someter"  id="someter">Someter</button>
+          <button class="btnStyle2" data-dojo-attach-point="borrarTodo"  id="borrarTodo">borrar todo</button>
         </div>
-        <!--termina tab de puntos de referencias-->
-        
-        
-        <!--Segundo tab donde estan las cosas de comercios-->
-        <div data-dojo-type="dijit/layout/ContentPane" style="padding-left:0px; height:100%; padding:4px !important" title="Establecimientos Comerciales">
-              <!-- <input id="typesOfCommerce" data-dojo-attach-point="typesOfCommerce" style="margin-bottom: 10px" /> -->
-              <div style="    font-size: 1.5em;font-weight:600;margin-top: 5px;margin-bottom:10px; display:block;">Comercios</div>
-              <div id="typesOfCommerce" data-dojo-attach-point="typesOfCommerce" style="margin-bottom: 0px">
-                
-              </div>
-              <!-- <p>Tipos de comercios elegidos:</p>
-              <div id="selectedTypes" data-dojo-attach-point="selectedTypes">
-
-              </div> -->
-              <!-- <button class="btnStyle2"></button> -->
-              <p style="margin-top:10px; margin-bottom:10px">Comercios Encontrados:</p>
-                           
-              <button class="btnStyle2" data-dojo-attach-point="showComerces" data-dojo-attach-event="click:ClearAllSelectedCheckBox" id="showComerces" style="display:none; float:left; margin-bottom:10px">Limpiar Selecci&oacute;n</button>
-              <button class="btnDeleteStyle" data-dojo-attach-point="cucar" data-dojo-attach-event="click:ClearAllComercios" id="cucar" style="display:none;float:left; margin-bottom: 10px">Borrar Lista</button>
-              <div data-dojo-attach-point="treeViewBodyComercios" style="width:100%; max-height:450px;overflow-y:auto; margin-top: 10px"></div>
-
-              
-              
-              <!--<input id="Zip1" data-dojo-attach-point="Zip1">
-                   <option value="default" >Seleccione tipo de comercio</option>
-              </select> -->
-
+      </div>
+      <!--RESULT SCREEN LAYOUT-->
+      <div data-dojo-attach-point="Results" data-dojo-id="Results" style="display:none">
+        <button class="btnStyle2" data-dojo-attach-point="retroceder"  id="retroceder">Nueva Busqueda</button>
+        <br />
+        <br />
+        <table data-dojo-attach-point="TableResultsGross">
+          <tbody data-dojo-attach-point="tableBodyGross">
+          </tbody>
+        </table>
+        <button class="btnStyle2" data-dojo-attach-point="ClearCheckPoints" data-dojo-attach-event="click:ClearAllPoints" id="showComerces" style="display:none; float:left; margin-bottom:10px">
+          Limpiar Selecci&oacute;n
+        </button>
+        <div id="bodyTree" data-dojo-attach-point="bodyTree" style="width:100%: display:block; float:left">
+          <div data-dojo-attach-point="treeViewBody" style="width:100%">
+          </div>
         </div>
-       <!-- <div data-dojo-type="dijit/layout/ContentPane" title="My last tab" data-dojo-props="closable:true">
-            Lorem ipsum and all around - last...
-        </div>-->
+        <div data-dojo-type="dijit/Dialog"  data-dojo-attach-point="dialogo" data-dojo-id="dialogo" style="width:500px;height:400px; background-color: white" title="Informacion Solicitada">
+          <div class="dijitDialogPaneContentArea" style="width:400px;height:300px;" data-dojo-attach-point="AlFin">
+            alfin
+          </div>
+        </div>
+      </div>
     </div>
+    <!--termina tab de puntos de referencias-->
+    <!--Segundo tab donde estan las cosas de comercios-->
+    <div data-dojo-type="dijit/layout/ContentPane" style="padding-left:0px; height:100%; padding:4px !important" title="Establecimientos Comerciales">
+      <div style="    font-size: 1.5em;font-weight:600;margin-top: 5px;margin-bottom:10px; display:block;">
+        Comercios
+      </div>
+      <div id="typesOfCommerce" data-dojo-attach-point="typesOfCommerce" style="margin-bottom: 0px">
+        
+      </div>
+      <p style="margin-top:10px; margin-bottom:10px">
+        Comercios Encontrados:
+      </p>
+      <button class="btnStyle2" data-dojo-attach-point="showComerces" data-dojo-attach-event="click:ClearAllSelectedCheckBox" id="showComerces" style="display:none; float:left; margin-bottom:10px">Limpiar Selecci&oacute;n</button>
+      <button class="btnDeleteStyle" data-dojo-attach-point="cucar" data-dojo-attach-event="click:ClearAllComercios" id="cucar" style="display:none;float:left; margin-bottom: 10px">Borrar Lista</button>
+      <div data-dojo-attach-point="treeViewBodyComercios" style="width:100%; max-height:450px;overflow-y:auto; margin-top: 10px"></div>
+    </div>
+  </div>
 </div>
 
-        
-        
-    
+
+
+
